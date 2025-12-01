@@ -41,14 +41,17 @@ function getBestTagMatch(tag, reference) {
     if (tagIngredient.isEmpty()) return null
 
     var result = tagIngredient.first.id
-    if (reference === undefined) return result
     for (let it of tagIngredient.stacks)
         if (it.id.indexOf("minecraft:") === 0) result = it.id
-    for (let it of tagIngredient.stacks)
-        if (it.id.indexOf(reference.split(":")[0]) === 0) result = it.id
+    if (reference !== undefined)
+        for (let it of tagIngredient.stacks)
+            if (it.id.indexOf(reference.split(":")[0]) === 0) result = it.id
+
+    if (result === "minecraft:barrier") return null
     return result
 }
 function getBlocksAndNuggets(item) {
+    // TODO: fix bug with barrier blocks
     var result = null
     Item.of(item).tags.forEach(tag => {
         const tagName = ('' + tag)
@@ -66,6 +69,7 @@ function getBlocksAndNuggets(item) {
         if (block === null || nugget === null) return
 
         result = [nugget, item, block]
+        console.log(`>>-M ${nugget} ${item} ${block}`)
     })
     return result
 }
@@ -84,6 +88,7 @@ function toInfinite(item) {
             "compacting_framed_drawer"
         )
     }
+    // TODO: handle only two compressible
     infinitedItems.push(result)
     return result
 }
